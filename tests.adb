@@ -1,4 +1,4 @@
-pragma SPARK_Mode (Off); -- Exceptions are used to test precondition traps
+pragma SPARK_Mode (Off); --  Exceptions are used to test precondition traps
 
 with Ada.Text_IO; use Ada.Text_IO;
 with Accumulator; use Accumulator;
@@ -6,6 +6,8 @@ with Accumulator; use Accumulator;
 procedure Tests is
    Pass_Count : Natural := 0;
    Fail_Count : Natural := 0;
+
+   procedure Check (Label : String; OK : Boolean);
 
    procedure Check (Label : String; OK : Boolean) is
    begin
@@ -21,7 +23,7 @@ procedure Tests is
    E : Engine;
    Caught : Boolean;
 begin
-   -- TEST 1: Single Positive Addition
+   --  TEST 1: Single Positive Addition
    Put_Line ("TEST 1 — Single Positive Addition");
    Reset (E);
    Add_Sample (E, 500);
@@ -29,7 +31,7 @@ begin
    Check ("1.2 Total is 500", E.Total = 500);
    Check ("1.3 Mean is 500", Current_Mean (E) = 500);
 
-   -- TEST 2: Multiple Positive Additions
+   --  TEST 2: Multiple Positive Additions
    Put_Line ("TEST 2 — Multiple Positive Additions");
    Reset (E);
    Add_Sample (E, 100);
@@ -39,7 +41,7 @@ begin
    Check ("2.2 Total is 600", E.Total = 600);
    Check ("2.3 Mean is 200", Current_Mean (E) = 200);
 
-   -- TEST 3: Reset Functionality
+   --  TEST 3: Reset Functionality
    Put_Line ("TEST 3 — Reset Functionality");
    Reset (E);
    Add_Sample (E, 1000);
@@ -49,7 +51,7 @@ begin
    Add_Sample (E, 50);
    Check ("3.3 Count resumes at 1", E.Count = 1);
 
-   -- TEST 4: Single Negative Addition
+   --  TEST 4: Single Negative Addition
    Put_Line ("TEST 4 — Single Negative Addition");
    Reset (E);
    Add_Sample (E, -500);
@@ -57,7 +59,7 @@ begin
    Check ("4.2 Total is -500", E.Total = -500);
    Check ("4.3 Mean is -500", Current_Mean (E) = -500);
 
-   -- TEST 5: Multiple Negative Additions
+   --  TEST 5: Multiple Negative Additions
    Put_Line ("TEST 5 — Multiple Negative Additions");
    Reset (E);
    Add_Sample (E, -100);
@@ -67,7 +69,7 @@ begin
    Check ("5.2 Total is -600", E.Total = -600);
    Check ("5.3 Mean is -200", Current_Mean (E) = -200);
 
-   -- TEST 6: Symmetrical Cancellation
+   --  TEST 6: Symmetrical Cancellation
    Put_Line ("TEST 6 — Symmetrical Cancellation");
    Reset (E);
    Add_Sample (E, 5000);
@@ -76,7 +78,7 @@ begin
    Check ("6.2 Total is 0", E.Total = 0);
    Check ("6.3 Mean is 0", Current_Mean (E) = 0);
 
-   -- TEST 7: Extreme Positive Value
+   --  TEST 7: Extreme Positive Value
    Put_Line ("TEST 7 — Extreme Positive Value");
    Reset (E);
    Add_Sample (E, 10_000);
@@ -84,7 +86,7 @@ begin
    Check ("7.2 Total is 10000", E.Total = 10_000);
    Check ("7.3 Mean is 10000", Current_Mean (E) = 10_000);
 
-   -- TEST 8: Extreme Negative Value
+   --  TEST 8: Extreme Negative Value
    Put_Line ("TEST 8 — Extreme Negative Value");
    Reset (E);
    Add_Sample (E, -10_000);
@@ -92,7 +94,7 @@ begin
    Check ("8.2 Total is -10000", E.Total = -10_000);
    Check ("8.3 Mean is -10000", Current_Mean (E) = -10_000);
 
-   -- TEST 9: Zero Samples
+   --  TEST 9: Zero Samples
    Put_Line ("TEST 9 — Zero Samples");
    Reset (E);
    Add_Sample (E, 0);
@@ -102,7 +104,7 @@ begin
    Check ("9.2 Total is 0", E.Total = 0);
    Check ("9.3 Mean is 0", Current_Mean (E) = 0);
 
-   -- TEST 10: Truncation Check (Positive)
+   --  TEST 10: Truncation Check (Positive)
    Put_Line ("TEST 10 — Truncation Check (Positive)");
    Reset (E);
    Add_Sample (E, 10);
@@ -112,7 +114,7 @@ begin
    Check ("10.2 Total is 31", E.Total = 31);
    Check ("10.3 Mean truncates to 10", Current_Mean (E) = 10);
 
-   -- TEST 11: Truncation Check (Negative)
+   --  TEST 11: Truncation Check (Negative)
    Put_Line ("TEST 11 — Truncation Check (Negative)");
    Reset (E);
    Add_Sample (E, -10);
@@ -122,14 +124,15 @@ begin
    Check ("11.2 Total is -31", E.Total = -31);
    Check ("11.3 Mean truncates to -10", Current_Mean (E) = -10);
 
-   -- TEST 12: Empty Mean Precondition Exception
+   --  TEST 12: Empty Mean Precondition Exception
    Put_Line ("TEST 12 — Empty Mean Precondition Exception");
    Reset (E);
    Check ("12.1 Engine is empty", E.Count = 0);
    Caught := False;
    begin
       declare
-         Val : Sample_Value := Current_Mean (E);
+         Val : constant Sample_Value := Current_Mean (E);
+         pragma Unreferenced (Val);
       begin
          null;
       end;
@@ -139,7 +142,7 @@ begin
    Check ("12.2 Exception caught calling Mean on empty", Caught);
    Check ("12.3 Engine count remains 0", E.Count = 0);
 
-   -- TEST 13: Max Capacity Precondition Exception
+   --  TEST 13: Max Capacity Precondition Exception
    Put_Line ("TEST 13 — Max Capacity Precondition Exception");
    Reset (E);
    for I in 1 .. 1000 loop
@@ -156,6 +159,8 @@ begin
    Check ("13.3 Exception caught on 1001st addition", Caught);
 
    Put_Line ("");
-   Put_Line ("=== " & Natural'Image (Pass_Count) & " passed, " & Natural'Image (Fail_Count) & " failed ===");
+   Put_Line
+     ("=== " & Natural'Image (Pass_Count) & " passed, " &
+      Natural'Image (Fail_Count) & " failed ===");
    pragma Assert (Fail_Count = 0, "Some tests failed");
 end Tests;
