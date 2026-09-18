@@ -14,7 +14,8 @@ package Accumulator is
    function Current_Mean (E : Engine) return Sample_Value with
      Pre  => E.Count > 0
              and then E.Total / Total_Value (E.Count) in
-               Total_Value (Sample_Value'First) .. Total_Value (Sample_Value'Last);
+               Total_Value (Sample_Value'First) ..
+               Total_Value (Sample_Value'Last);
 
    procedure Add_Sample (E : in out Engine; S : Sample_Value) with
      Pre  => E.Count < Count_Type'Last
