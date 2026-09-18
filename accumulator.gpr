@@ -8,12 +8,13 @@ project Accumulator is
       for Proof_Level use "4";
    end Proof;
 
-   for Compiler_Switches ("Ada") use (
-      "-gnat2022",
-      "-gnatwa",
-      "-gnata",
-      "-gnat05",
-      "-gnatY",
-      "-spark"
-   );
+   package Compiler is
+      for Default_Switches ("Ada") use (
+         "-gnat2022",
+         "-gnatwa",
+         "-gnata",
+         "-gnat05",
+         "-gnatY"
+      );
+   end Compiler;
 end Accumulator;
