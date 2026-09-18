@@ -13,7 +13,6 @@ project Accumulator is
          "-gnat2022",
          "-gnatwa",
          "-gnata",
-         "-gnat05",
          "-gnaty"
       );
    end Compiler;
