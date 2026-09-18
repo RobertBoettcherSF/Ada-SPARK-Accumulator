@@ -1,23 +1,13 @@
-GNAT    := gnatmake
-SPARK   := spark
-FLAGS   := -gnatwa -gnat2022 -gnata -gnat05 -gnatY
-OBJ_DIR := obj
-BIN_DIR := bin
-
 .PHONY: all test clean prove
 
-all: $(BIN_DIR)/tests
+all:
+	mkdir -p obj bin && gnatmake -gnatwa -gnat2022 -gnata -gnat05 -gnatY -Paccumulator.gpr
 
-$(BIN_DIR)/tests: *.ads *.adb *.gpr
-	mkdir -p $(OBJ_DIR)$(BIN_DIR)
-	$(GNAT)$(FLAGS) -Paccumulator.gpr
-
-prove: *.ads *.adb *.gpr
-	mkdir -p $(OBJ_DIR)$(SPARK) prove -Paccumulator.gpr --level=4
+prove:
+	mkdir -p obj && spark prove -Paccumulator.gpr --level=4
 
 test: all
-	@echo "Running tests..."
-	@$(BIN_DIR)/tests
+	./bin/tests
 
 clean:
-	rm -rf $(OBJ_DIR)$(BIN_DIR)
+	rm -rf obj bin
